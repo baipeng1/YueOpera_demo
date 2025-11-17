@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .dataset {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 2px solid #000;
+            border-radius: 8px;
+        }
+        .model {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .model h3 {
+            margin: 0 0 10px 0;
+        }
+        .audio-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .audio-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .loading-error {
+            color: red;
+            font-style: italic;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Towards Singing Voice Synthesis for Yue Opera: Dataset, Data Augmentation, and Acoustic Model</h1>
+    <h2>Yue Opera is in Chinese Wu dialect. Gezi Opera is in Hokkien language, while PopCS and M4Singer are in Chinese. <br>
+    Please compare the samples vertically.</h2>
+    <h3>There are a lot of audio files, so the loading might be slow.</h3>
+
+    
+    <div class="datasets">
+        <script>
+            const datasets = ["Yue Opera", "Gezi Opera", "Italian Opera", "PopCS", "M4Singer"];
+            const models = ["Ground truth", "FFT-Singer", "DiffSinger", "FT-GAN", "YueOpera_Singer"];
+            
+            datasets.forEach((dataset, datasetIndex) => {
+                // 隐藏 dataset2 (Italian Opera)
+                if (datasetIndex === 2) return;
+                
+                document.write(`<div class='dataset'>`);
+                document.write(`<h2>${dataset}</h2>`);
+                
+                models.forEach((model, modelIndex) => {
+                    const fileModelIndex = modelIndex + 1;
+                    
+                    document.write(`<div class='model'>`);
+                    document.write(`<h3>${model}</h3>`);
+                    document.write(`<div class='audio-container'>`);
+                    
+                    let sampleCount = 5;
+                    for (let i = 1; i <= sampleCount; i++) {
+                        const audioPath = `audio/dataset${datasetIndex}_model${fileModelIndex}_sample${i}.wav`;
+                        
+                        document.write(
+                            `<div class="audio-item">
+                                <div>Sample ${i}</div>
+                                <audio controls onerror="this.nextElementSibling.innerHTML = '加载失败'">
+                                    <source src='${audioPath}' type='audio/wav'>
+                                    您的浏览器不支持音频播放。
+                                </audio>
+                                <div class="loading-error"></div>
+                            </div>`
+                        );
+                    }
+                    
+                    document.write(`</div>`);
+                    document.write(`</div>`);
+                });
+                document.write(`</div>`);
+            });
+        </script>
+    </div>
+</body>
+</html>
