@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yue Opera Singing Voice Synthesis Demo</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e63946;
+        }
+        
+        h1 {
+            color: #2a2a72;
+            margin-bottom: 15px;
+            font-size: 2.2rem;
+        }
+        
+        h2 {
+            color: #457b9d;
+            margin: 20px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #ccc;
+        }
+        
+        .note-box {
+            background-color: #e9f5ff;
+            border-left: 4px solid #457b9d;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .dataset {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .model-row {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .model-row:last-child {
+            border-bottom: none;
+        }
+        
+        .model-title {
+            background-color: #2a2a72;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px 6px 0 0;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .audio-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .audio-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .audio-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sample-label {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2a2a72;
+            font-size: 0.95rem;
+        }
+        
+        audio {
+            width: 100%;
+            max-width: 250px;
+            border-radius: 8px;
+        }
+        
+        .loading-error {
+            color: #e63946;
+            font-style: italic;
+            font-size: 12px;
+            margin-top: 5px;
+            min-height: 18px;
+        }
+        
+        .model-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2a2a72;
+            font-size: 1.1rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .audio-container {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .dataset {
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .audio-container {
+                grid-template-columns: 1fr;
+            }
+            
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>越剧歌唱合成演示</h1>
+            <p>Yue Opera Singing Voice Synthesis Demo</p>
+        </header>
+        
+        <div class="note-box">
+            <p><strong>说明：</strong>本页面展示了基于越剧数据集训练的歌唱合成模型音频样本。每个模型对应一行，每个音频文件后缀(0, 11, 16, 21)对应不同的演唱片段。</p>
+            <p><strong>注意：</strong>由于音频文件较多，加载可能需要一些时间，请耐心等待。</p>
+        </div>
+        
+        <div class="dataset">
+            <h2>越剧数据集 (Yue Opera Dataset)</h2>
+            
+            <!-- Model 0 -->
+            <div class="model-row">
+                <div class="model-title">模型 0 (Model 0)</div>
+                <div class="audio-container">
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 0</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model0_0.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 11</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model0_11.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 16</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model0_16.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 21</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model0_21.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Model 1 -->
+            <div class="model-row">
+                <div class="model-title">模型 1 (Model 1)</div>
+                <div class="audio-container">
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 0</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model1_0.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 11</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model1_11.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 16</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model1_16.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 21</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model1_21.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Model 2 -->
+            <div class="model-row">
+                <div class="model-title">模型 2 (Model 2)</div>
+                <div class="audio-container">
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 0</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model2_0.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 11</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model2_11.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 16</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model2_16.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 21</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model2_21.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Model 3 -->
+            <div class="model-row">
+                <div class="model-title">模型 3 (Model 3)</div>
+                <div class="audio-container">
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 0</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model3_0.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 11</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model3_11.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 16</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model3_16.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 21</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model3_21.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Model 4 -->
+            <div class="model-row">
+                <div class="model-title">模型 4 (Model 4)</div>
+                <div class="audio-container">
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 0</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model4_0.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 11</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model4_11.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 16</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model4_16.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                    
+                    <div class="audio-item">
+                        <div class="sample-label">Sample 21</div>
+                        <audio controls onerror="this.nextElementSibling.innerHTML = '音频加载失败'">
+                            <source src='audio_bench/model4_21.wav' type='audio/wav'>
+                            您的浏览器不支持音频播放。
+                        </audio>
+                        <div class="loading-error"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>越剧歌唱合成研究演示 &copy; 2023</p>
+            <p>音频文件路径: audio_bench/</p>
+        </footer>
+    </div>
+    
+    <script>
+        // 添加音频加载状态提示
+        document.addEventListener('DOMContentLoaded', function() {
+            const audioElements = document.querySelectorAll('audio');
+            
+            audioElements.forEach(audio => {
+                // 添加加载中提示
+                const errorDiv = audio.nextElementSibling;
+                if (errorDiv && errorDiv.classList.contains('loading-error')) {
+                    errorDiv.innerHTML = '加载中...';
+                }
+                
+                // 当音频可以播放时清除提示
+                audio.addEventListener('canplay', function() {
+                    const errorDiv = this.nextElementSibling;
+                    if (errorDiv && errorDiv.classList.contains('loading-error')) {
+                        errorDiv.innerHTML = '';
+                    }
+                });
+                
+                // 当音频加载错误时显示错误
+                audio.addEventListener('error', function() {
+                    const errorDiv = this.nextElementSibling;
+                    if (errorDiv && errorDiv.classList.contains('loading-error')) {
+                        if (errorDiv.innerHTML !== '音频加载失败') {
+                            errorDiv.innerHTML = '音频加载失败';
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
